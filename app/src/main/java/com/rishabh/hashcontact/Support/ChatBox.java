@@ -5,6 +5,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -20,6 +21,7 @@ import android.Manifest;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.SuppressLint;
+import android.app.ActivityManager;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -72,6 +74,8 @@ import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 
+import com.rishabh.OnSwipeTouchListener;
+import com.rishabh.hashcontact.MainActivity;
 import com.rishabh.hashcontact.MapsFragment;
 import com.rishabh.hashcontact.MediaAdapter;
 import com.rishabh.hashcontact.Messege;
@@ -140,6 +144,8 @@ RecyclerView.LayoutManager mMediaLayoutManager;
     ConstraintLayout rootView;
     String msgseen="false";int f=0;
 Drawable img;int flag=0;
+    LinearLayoutManager linearLayoutManager;
+    ImageView calling;
 
 LinearLayout composer,blockmsg;
 TextView changeback,mute,block,defaul,custom;
@@ -165,6 +171,7 @@ ImageView dp;int sentflag=0;
     int emojif=0;
     ArrayList<Messege> messeges=new ArrayList<Messege>();
     int fopen=1;FloatingActionButton clip;
+    FloatingActionButton scroll;
 
     RecyclerViewChatAdapter chatAdapter;
     MediaAdapter mMediaAdapter;
@@ -183,6 +190,24 @@ ImageView dp;int sentflag=0;
 
         setContentView(R.layout.activity_chat_box);
         getWindow().setStatusBarColor(R.color.darkgray);
+        LiveLocationService mYourService = new LiveLocationService();
+        // Intent userService = new Intent(MainActivity.this, userLocationService.getClass());
+        Intent mServiceIntent = new Intent(ChatBox.this, mYourService.getClass());
+
+
+
+        if (!isMyServiceRunning(mYourService.getClass())) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+
+                startForegroundService(mServiceIntent);
+
+
+            } else {
+
+                startService(mServiceIntent);
+
+            }
+        }
         /* final String APP_ID = "1688";
          final String AUTH_KEY = "C3DBrqhVjVEdqkH";
          final String AUTH_SECRET = "ywTXBNSn36N3kAH";
@@ -202,6 +227,7 @@ ImageView dp;int sentflag=0;
 
         b=findViewById(R.id.emoji);
         mapfrag=findViewById(R.id.mapfrag);
+        calling=findViewById(R.id.Caller);
         upload_progress=findViewById(R.id.uploadprog);
         upload_progress.setScaleY(1.5f);
 
@@ -234,6 +260,7 @@ ImageView dp;int sentflag=0;
         fabanticlock=AnimationUtils.loadAnimation(this,R.anim.rotate_anticlockwise);
         rootView = findViewById(R.id.rootview);
         calluser = findViewById(R.id.call);
+        scroll=findViewById(R.id.scroll_bottom);
        /* tool=findViewById(R.id.tool);
         tool.getBackground().setAlpha(99);*/
         frag=findViewById(R.id.frag);
@@ -284,6 +311,42 @@ shareloc=findViewById(R.id.shareloc);
 
 
         composer=findViewById(R.id.composer);
+        calling.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(checkCallPermission())
+                {
+                    FirebaseDatabase.getInstance().getReference().child(user2).child("Personal").addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            /*Intent callIntent = new Intent("com.android.phone.videocall");
+                            callIntent.putExtra("videocall", true);
+                            callIntent.setData(Uri.parse("tel:" + dataSnapshot.getValue(String.class)));
+                            startActivity(callIntent);*/
+                            if(dataSnapshot.hasChild("Phone")) {
+                                Intent intent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + dataSnapshot.child("Phone").getValue(String.class)));
+                                startActivity(intent);
+                            }
+                            else
+                            {
+                                Toast.makeText(ChatBox.this,"Phone Number not added !!",Toast.LENGTH_SHORT).show();
+                            }
+
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
+
+                }
+                else
+                {
+                    requestCallPermission();
+                }
+            }
+        });
         loc.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -1028,6 +1091,35 @@ dp.setOnClickListener(new View.OnClickListener() {
         else {
             super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         }
+        if (requestCode == CALL_PHONE_CODE) {
+            for (int i = 0; i < permissions.length; i++) {
+                String permission = permissions[i];
+                int grantResult = grantResults[i];
+
+                if (permission.equals(Manifest.permission.CALL_PHONE)) {
+                    if (grantResult == PackageManager.PERMISSION_GRANTED) {
+                        FirebaseDatabase.getInstance().getReference().child(user2).child("Personal").child("Phone").addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                                Intent intent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + dataSnapshot.getValue(String.class) ));
+                                startActivity(intent);
+
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                            }
+                        });
+
+
+                    } else {
+                        Toast.makeText(ChatBox.this,"Permission denied !Cannot Make call",Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+        }
     }
 
 
@@ -1179,7 +1271,7 @@ dp.setOnClickListener(new View.OnClickListener() {
             locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
 
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 20, locationListener);
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 0, locationListener);
              lastKnown=getLastKnownLocation();
              if(lastKnown!=null) {
                  recyclerview_progress.setVisibility(View.GONE);
@@ -1587,26 +1679,7 @@ rootView.setBackground(getDrawable(R.mipmap.chatba));
         messegeComposer=findViewById(R.id.MessgeContent);
 
         send=findViewById(R.id.sendMessege);
-        /*Thread thread = new Thread() {
-            @Override
-            public void run() {
-
-                while (true) {
-                    if (messegeComposer.getText().toString().equals("")) {
-                        Log.d("uithreadwaala", "fade");
-                        send.setBackgroundResource(R.drawable.fadedsend);
-                    } else {
-                        Log.d("uithreadwaala", "bright");
-                        send.setBackgroundResource(R.drawable.send);
-                    }
-
-                }
-
-            }
-        };
-
-        thread.start();*/
-       location.setBackgroundResource(R.drawable.location);
+               location.setBackgroundResource(R.drawable.location);
         database = FirebaseDatabase.getInstance();
         databaseReference=database.getReference().child("Communication");
         location.setOnClickListener(new View.OnClickListener() {
@@ -1761,22 +1834,28 @@ rootView.setBackground(getDrawable(R.mipmap.chatba));
 
             }
         });*/
-     /*   messegeComposer.setOnKeyListener(new View.OnKeyListener() {
+        /*messegeComposer.setOnKeyListener(new View.OnKeyListener() {
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event) {
-               // recyclerView.smoothScrollToPosition(0);
-                return true;
+                recyclerView.smoothScrollToPosition(0);
+                return false;
 
 
             }
         });*/
+
+
         rootView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
                 int heightDiff = rootView.getRootView().getHeight() - rootView.getHeight();
 
                 if (heightDiff > 500) {
-                    //recyclerView.smoothScrollToPosition(0);
+
+                    //if(linearLayoutManager!=null&&linearLayoutManager.findLastVisibleItemPosition()==0)
+
+                    recyclerView.smoothScrollToPosition(0);
+
                     Log.e("MyActivityyy", "keyboard opened");
                 } else {
 
@@ -2004,13 +2083,36 @@ rootView.setBackground(getDrawable(R.mipmap.chatba));
             String owner=intent.getStringExtra("id");
             Log.d("chaterror",owner);
             user2=owner;
-            LinearLayoutManager linearLayoutManager=new LinearLayoutManager(ChatBox.this);
+            linearLayoutManager=new LinearLayoutManager(ChatBox.this);
             linearLayoutManager.setReverseLayout(true);
 
 
             recyclerView.setLayoutManager(linearLayoutManager);
             chatAdapter=new RecyclerViewChatAdapter(ChatBox.this,messeges,currentUser,user2);
             recyclerView.setAdapter(chatAdapter);
+            recyclerView.setOnTouchListener(new OnSwipeTouchListener(ChatBox.this) {
+                public void onSwipeTop() {
+                    scroll.hide();
+                }
+                public void onSwipeRight() {
+
+
+                }
+                public void onSwipeLeft() {
+
+                }
+                public void onSwipeBottom() {
+                    scroll.show();
+                }
+
+            });
+            scroll.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    recyclerView.scrollToPosition(0);
+                    scroll.hide();
+                }
+            });
             dp=findViewById(R.id.dp);
             name=findViewById(R.id.username);
             lastseen=findViewById(R.id.lastseen);
@@ -2749,6 +2851,36 @@ rootView.setBackground(getDrawable(R.mipmap.chatba));
         }else{
 
         }
+    }
+    private boolean isMyServiceRunning(Class<?> serviceClass) {
+        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (serviceClass.getName().equals(service.service.getClassName())) {
+                Log.i("Service status", "Running");
+                return true;
+            }
+        }
+        Log.i("Service status", "Not running");
+        return false;
+    }
+
+
+    public boolean checkCallPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (checkSelfPermission(Manifest.permission.CALL_PHONE)
+                    != PackageManager.PERMISSION_GRANTED) {
+                return false;
+            }
+        }
+        return true;
+    }
+    int CALL_PHONE_CODE=111;
+    private void requestCallPermission() {
+        ActivityCompat.requestPermissions(
+                this,
+                new String[]{Manifest.permission.CALL_PHONE},
+                CALL_PHONE_CODE
+        );
     }
 
 

@@ -27,7 +27,7 @@ public class OnSwipeTouchListener implements OnTouchListener {
 
         @Override
         public boolean onDown(MotionEvent e) {
-            return true;
+            return false;
         }
 
         @Override
@@ -43,7 +43,7 @@ public class OnSwipeTouchListener implements OnTouchListener {
                         } else {
                             onSwipeLeft();
                         }
-                        result = true;
+                        result = false;
                     }
                 }
                 else if (Math.abs(diffY) > SWIPE_THRESHOLD && Math.abs(velocityY) > SWIPE_VELOCITY_THRESHOLD) {
@@ -52,7 +52,7 @@ public class OnSwipeTouchListener implements OnTouchListener {
                     } else {
                         onSwipeTop();
                     }
-                    result = true;
+                    result = false;
                 }
             } catch (Exception exception) {
                 exception.printStackTrace();

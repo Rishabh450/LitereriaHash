@@ -304,6 +304,29 @@
 
                             </ImageView>
                         </androidx.cardview.widget.CardView>
+                        <androidx.cardview.widget.CardView
+                            android:layout_width="35dp"
+                            android:layout_height="35dp"
+                            android:layout_marginTop="5dp"
+                            android:clickable="true"
+                            android:layout_marginRight="17.5dp"
+
+                            app:cardCornerRadius="20dp">
+
+                            <ImageView
+                                android:layout_width="40dp"
+                                android:layout_height="30dp"
+                                android:layout_gravity="center"
+                                android:id="@+id/Caller"
+
+                                android:backgroundTint="@android:color/white"
+                                android:clickable="true"
+                                android:focusable="true"
+                                android:src="@drawable/calling">
+
+                            </ImageView>
+                        </androidx.cardview.widget.CardView>
+
 
 
                         <androidx.cardview.widget.CardView
@@ -468,6 +491,26 @@
 
         </com.google.android.material.floatingactionbutton.FloatingActionButton>
 
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:layout_width="25dp"
+            android:id="@+id/scroll_bottom"
+            android:layout_height="25dp"
+            android:layout_gravity="bottom|end"
+            android:layout_marginRight="25dp"
+            android:layout_marginBottom="95dp"
+            android:backgroundTint="@color/colorPrimary"
+            android:clickable="true"
+            android:elevation="280dp"
+            android:visibility="gone"
+            android:focusable="true"
+            android:foreground="@drawable/scroll"
+            android:foregroundGravity="center"
+
+            app:borderWidth="0dp"
+            app:fabSize="normal"
+            app:pressedTranslationZ="12dp">
+
+        </com.google.android.material.floatingactionbutton.FloatingActionButton>
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/loc"
             android:layout_width="70dp"

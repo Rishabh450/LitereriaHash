@@ -162,25 +162,6 @@ public class Login extends AppCompatActivity {
 
         image.setVisibility(View.VISIBLE);
 
-        image.animate().rotationBy(360f).setDuration(500).setInterpolator(new LinearInterpolator()).start();
-
-        ObjectAnimator scaleDownX = ObjectAnimator.ofFloat(image, "scaleX", 0.7f);
-        ObjectAnimator scaleDownY = ObjectAnimator.ofFloat(image, "scaleY", 0.7f);
-        scaleDownX.setDuration(500);
-        scaleDownY.setDuration(500);
-
-        ObjectAnimator moveUpY = ObjectAnimator.ofFloat(image, "translationY", -100);
-        moveUpY.setDuration(500);
-
-        AnimatorSet scaleDown = new AnimatorSet();
-        AnimatorSet moveUp = new AnimatorSet();
-
-        scaleDown.play(scaleDownX).with(scaleDownY);
-        moveUp.play(moveUpY);
-
-        scaleDown.start();
-        moveUp.start();
-
 
         mProgress = new ProgressDialog(this);
         mProgress.setTitle("Logging in...");

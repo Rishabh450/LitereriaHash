@@ -1,6 +1,7 @@
 package com.rishabh.hashcontact;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.Dialog;
 import android.app.DownloadManager;
 import android.content.ActivityNotFoundException;
@@ -27,6 +28,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.MimeTypeMap;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -38,6 +40,8 @@ import com.bumptech.glide.Glide;
 import com.facebook.Profile;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.FirebaseDatabase;
+import com.rishabh.OnSwipeTouchListener;
+import com.rishabh.hashcontact.Support.ChatBox;
 
 
 import java.io.File;
@@ -66,6 +70,7 @@ public class RecyclerViewChatAdapter extends RecyclerView.Adapter<RecyclerViewCh
         this.seconduser=seconduser;
 
     }
+
     public String getEmojiByUnicodee(int unicode){
 
         return new String(Character.toChars(unicode));
@@ -141,9 +146,38 @@ public class RecyclerViewChatAdapter extends RecyclerView.Adapter<RecyclerViewCh
 
             Log.d("ak47", "onBindViewHolder: " + i);
             String[] arr = messeges.get(i).messege.trim().split("\n");
+         /*   chatViewHolder.recived.setOnTouchListener(new OnSwipeTouchListener(context) {
+                public void onSwipeTop() {
+                    Toast.makeText(context, "top", Toast.LENGTH_SHORT).show();
+                }
+                public void onSwipeRight() {
+
+                    Toast.makeText(context, "right", Toast.LENGTH_SHORT).show();
+                }
+                public void onSwipeLeft() {
+                    Toast.makeText(context, "left", Toast.LENGTH_SHORT).show();
+                }
+                public void onSwipeBottom() {
+                    Toast.makeText(context, "bottom", Toast.LENGTH_SHORT).show();
+                }
+
+            });*/
             chatViewHolder.linearLayout.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {
+                    if(messeges.get(i).sent==false&&chatViewHolder.recived.getVisibility()==View.VISIBLE)
+                    {
+                        Activity ac = (Activity) context;
+                        View view = ac.findViewById(R.id.MessgeContent);
+                        EditText messagecomposer =(EditText) view;
+                        String con ="REPLY FOR\n"+ messeges.get(i).messege.substring(0,messeges.get(i).messege.length()-1-8)+"\n"+"----------"+"\n";
+                        SpannableString sse = new SpannableString(con);
+                        sse.setSpan(new RelativeSizeSpan(0.5f), 0, con.length() -1, 0);
+                        sse.setSpan(new ForegroundColorSpan(Color.GRAY), 0, sse.length() - 1, 0);// set color
+                        messagecomposer.append(sse,0,sse.length());
+                        Toast.makeText(context, "Reply", Toast.LENGTH_SHORT).show();
+                    }
+
                     if (messeges.get(i).sent == true&&messeges.get(i).status!=null) {
                         AlertDialog.Builder builder = new AlertDialog.Builder(context);
                         final View view = LayoutInflater.from(context).inflate(R.layout.deletedialog, null);
@@ -198,7 +232,7 @@ public class RecyclerViewChatAdapter extends RecyclerView.Adapter<RecyclerViewCh
                         return true;
                     }
                     else
-                        return false;
+                        return true;
                 }
 
 

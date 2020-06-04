@@ -39,7 +39,7 @@ import com.theartofdev.edmodo.cropper.CropImageView;
 import java.io.IOException;
 
 public class ProfilePhoto extends AppCompatActivity {
-    EditText avatar;
+    EditText avatar,phone;
     Button def,upload,proceed;
     String provider;
     String id;
@@ -55,6 +55,7 @@ public class ProfilePhoto extends AppCompatActivity {
         setContentView(R.layout.activity_profile_photo);
         avatar=findViewById(R.id.avatar);
         proceed=findViewById(R.id.proceed);
+        phone=findViewById(R.id.phone);
         avatar.getBackground().setAlpha(50);
         def=findViewById(R.id.defaultpic);
         upload=findViewById(R.id.uploadfromgall);
@@ -179,6 +180,10 @@ public class ProfilePhoto extends AppCompatActivity {
                     Toast.makeText(ProfilePhoto.this,"Add Profile Picture",Toast.LENGTH_LONG).show();
 
                 }
+                else if(phone.getText().toString().equals(""))
+                {
+                    Toast.makeText(ProfilePhoto.this,"Enter Phone Number",Toast.LENGTH_LONG).show();
+                }
                 else
                 {  final ProgressDialog mProgress = new ProgressDialog(ProfilePhoto.this);
                     mProgress.setTitle("Uploading");
@@ -188,24 +193,31 @@ public class ProfilePhoto extends AppCompatActivity {
 
                     mProgress.setProgressStyle(ProgressDialog.STYLE_SPINNER);
                     mProgress.show();
+                    FirebaseDatabase.getInstance().getReference().child(id).child("Personal").child("Phone").setValue(phone.getText().toString()).addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            FirebaseDatabase.getInstance().getReference().child(id).child("Personal").child("Name").setValue(avatar.getText().toString().trim()).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void aVoid) {
+                                    String ava=avatar.getText().toString().trim();
+                                    final Intent intent = new Intent(ProfilePhoto.this, MainActivity.class);
+                                    intent.putExtra("avatar", ava);
+                                    intent.putExtra("url", url);
 
-                    FirebaseDatabase.getInstance().getReference().child(id).child("Personal").child("Name").setValue(avatar.getText().toString().trim()).addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        String ava=avatar.getText().toString().trim();
-                        final Intent intent = new Intent(ProfilePhoto.this, MainActivity.class);
-                        intent.putExtra("avatar", ava);
-                        intent.putExtra("url", url);
-                        FirebaseDatabase.getInstance().getReference().child(id).child("isReg").setValue("yes").addOnSuccessListener(new OnSuccessListener<Void>() {
-                            @Override
-                            public void onSuccess(Void aVoid) {
-                                mProgress.dismiss();
-                                startActivity(intent);
-                                finish();
-                            }
-                        });
-                    }
-                });
+                                    FirebaseDatabase.getInstance().getReference().child(id).child("isReg").setValue("yes").addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void aVoid) {
+                                            mProgress.dismiss();
+                                            startActivity(intent);
+                                            finish();
+                                        }
+                                    });
+                                }
+                            });
+                        }
+                    });
+
+
 
                 }
 

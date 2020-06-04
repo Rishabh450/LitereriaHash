@@ -40,6 +40,26 @@
                 >
 
             </EditText>
+            <EditText
+                android:layout_marginTop="20dp"
+                android:layout_width="match_parent"
+                android:layout_height="70dp"
+                android:background="@drawable/editt"
+                android:textColor="@android:color/darker_gray"
+                android:gravity="center"
+                android:inputType="phone"
+                android:fontFamily="@font/proximanova"
+                android:hint="ENTER PHONE NUMBER"
+                android:textColorHint="@android:color/darker_gray"
+
+
+
+
+                android:id="@+id/phone"
+
+                >
+
+            </EditText>
 
             <Button
                 android:layout_width="match_parent"

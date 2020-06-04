@@ -8,10 +8,10 @@ android {
     defaultConfig {
 
         applicationId "com.rishabh.hashcontact"
-        minSdkVersion 23
+        minSdkVersion 21
         targetSdkVersion 28
-        versionCode 3
-        versionName "1.2"
+        versionCode 5
+        versionName "1.4"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         manifestPlaceholders = [
                 onesignal_app_id               : '0e798521-7447-490d-b0a6-5f6ebeccfe58',

@@ -27,6 +27,7 @@ import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.Target;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.rishabh.hashcontact.Models.Seen;
 import com.rishabh.hashcontact.R;
 import com.facebook.Profile;
@@ -42,7 +43,9 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 public class SeeStatus extends AppCompatActivity {
     ImageView userpic,userpi,content,see;
@@ -169,7 +172,6 @@ String provider,currentUser;
 
 
             String l= String.valueOf(seen.size());
-        Log.d("listwa", seen.get(0).getTime()+" "+seen.get(0).getUserid()+" "+l);
 
         seennumber.setText(l);
         whoseen=findViewById(R.id.whoseen);
@@ -265,11 +267,20 @@ String provider,currentUser;
                         e.printStackTrace();
                     }
                     String msg="reply on status: "+reply.getText().toString()+"\n"+currentTime;
+                    Map<String,String> map = new HashMap();
+                    map.put("msg",msg);
+                    map.put("status","Sent\\n10:10 AM 10-10");
 
                     DatabaseReference reference= FirebaseDatabase.getInstance().getReference().child("Communication").child(currentUser).child("Messege").child(id).child("chat").child(ts);
-                    reference.setValue(msg);
-                    Toast.makeText(SeeStatus.this,"Reply sent",Toast.LENGTH_SHORT).show();
-                    reply.setText("");
+                    reference.setValue(map);
+                    reference.child("delivered").setValue(false).addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            Toast.makeText(SeeStatus.this,"Reply sent",Toast.LENGTH_SHORT).show();
+                            reply.setText("");
+                        }
+                    });
+
 
                 }
             }

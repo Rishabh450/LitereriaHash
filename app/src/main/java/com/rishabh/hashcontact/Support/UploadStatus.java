@@ -237,6 +237,8 @@ uploadst.setOnClickListener(new View.OnClickListener() {
 
                         mProgress.dismiss();
                         Toast.makeText(UploadStatus.this, "Uploaded", Toast.LENGTH_LONG).show();
+                        finish();
+
 
 
                     }

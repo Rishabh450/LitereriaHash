@@ -16,20 +16,19 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:text="HashContact"
+        android:text="rishabhbhardwaj1234567@gmail.com"
         android:fontFamily="@font/montserrat"
         android:textStyle="bold"
         android:textColor="#ffffff"
-        android:textSize="30dp"/>
+        android:textSize="10dp"/>
     <ImageView
         android:layout_width="150dp"
         android:id="@+id/imageView"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="80dp"
         android:layout_centerHorizontal="true"
         android:layout_height="150dp"
-        android:layout_below="@+id/ojass"
-        android:src="@drawable/get"
-        android:tint="@color/white"
+        android:layout_centerInParent="true"
+        android:src="@drawable/noti"
         />
     <LinearLayout
         android:layout_width="wrap_content"

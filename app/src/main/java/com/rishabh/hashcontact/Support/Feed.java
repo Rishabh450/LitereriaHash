@@ -192,6 +192,7 @@ public class Feed extends AppCompatActivity {
             public void onRefresh() {
 
                 fetchFeedsDataFromFirebase();
+                getData();
 //                if (mFeedAdapter != null)
 //                    mFeedAdapter.notifyDataSetChanged();
                 if (mFeedAdapter != null)
@@ -203,7 +204,7 @@ public class Feed extends AppCompatActivity {
     public void getData() {
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("Status");
         reference.keepSynced(false);
-        reference.addValueEventListener(listener = new ValueEventListener() {
+        reference.addListenerForSingleValueEvent(listener = new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 statusArrayList.clear();
@@ -437,6 +438,10 @@ public class Feed extends AppCompatActivity {
 
         return false;
     }
+
+
+
+
 }
 
 
